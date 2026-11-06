@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Noto+Serif+Devanagari:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --midnight: #090719;
+  --royal-purple: #21103D;
+  --rich-maroon: #4A1028;
+  --deep-wine: #240817;
+  --burgundy-dark: #19040f;
+  --metallic-gold: #FFD36A;
+  --warm-champagne: #FFF0C2;
+  --diya-orange: #FF8A24;
+  --ivory-white: #FFF9ED;
+  --gold-glow: 0 0 25px rgba(255, 211, 106, 0.45);
+  --orange-glow: 0 0 30px rgba(255, 138, 36, 0.5);
+  --card-bg: rgba(33, 16, 61, 0.78);
+  --card-border: rgba(255, 211, 106, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--midnight);
+  color: var(--ivory-white);
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090719;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FFD36A 0%, #FF8A24 100%);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FFD36A;
+}
+
+/* Heading Typography */
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+.font-cinzel-dec {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+}
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+.font-devanagari {
+  font-family: 'Noto Serif Devanagari', serif;
+}
+.font-cormorant {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Gold Text Shimmer */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFF0C2 0%, #FFD36A 50%, #FF8A24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 14px rgba(255, 211, 106, 0.25);
+}
+
+.gold-gradient-light {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF0C2 60%, #FFD36A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glass Card */
+.glass-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 240, 194, 0.2);
+  border-radius: 20px;
+}
+
+.glass-panel-gold {
+  background: linear-gradient(135deg, rgba(33, 16, 61, 0.85) 0%, rgba(74, 16, 40, 0.75) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 211, 106, 0.45);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 211, 106, 0.15);
+  border-radius: 24px;
+}
+
+/* Luxury Burgundy Greeting Card (Inspired by User Reference Screenshot) */
+.luxury-wishes-card {
+  background: radial-gradient(circle at 50% 20%, #2f0b1e 0%, #1c0512 60%, #0d0208 100%);
+  border: 2px solid rgba(255, 211, 106, 0.75);
+  box-shadow: 0 0 40px rgba(255, 138, 36, 0.25), 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 0 0 4px rgba(74, 16, 40, 0.5), inset 0 0 0 5px rgba(255, 211, 106, 0.4);
+  border-radius: 24px;
+  position: relative;
+}
+
+/* Royal Button */
+.btn-royal-gold {
+  background: linear-gradient(135deg, #FFD36A 0%, #FF9A24 100%);
+  color: #090719;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  border: 1px solid #FFF0C2;
+  box-shadow: 0 4px 20px rgba(255, 154, 36, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.btn-royal-gold:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(255, 211, 106, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+.btn-royal-gold:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn-royal-secondary {
+  background: rgba(33, 16, 61, 0.7);
+  color: #FFF0C2;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 211, 106, 0.35);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-royal-secondary:hover {
+  background: rgba(74, 16, 40, 0.8);
+  border-color: #FFD36A;
+  color: #FFFFFF;
+  box-shadow: 0 4px 18px rgba(255, 211, 106, 0.25);
+}
+
+/* Animations */
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: floatGentle 4s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes flameFlicker {
+  0% { transform: scale(1) rotate(0deg); opacity: 0.95; }
+  25% { transform: scale(1.08, 0.92) rotate(-1.5deg); opacity: 1; }
+  50% { transform: scale(0.95, 1.05) rotate(1deg); opacity: 0.9; }
+  75% { transform: scale(1.04, 0.96) rotate(-1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 0.95; }
+}
+.flame-flicker {
+  animation: flameFlicker 0.25s infinite ease-in-out alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spinSlow 18s linear infinite;
+}
+
+/* Indian Toran Pattern Border */
+.toran-border-top {
+  background-image: radial-gradient(circle at 10px 0px, transparent 8px, #FFD36A 9px, #FFD36A 11px, transparent 12px);
+  background-size: 20px 14px;
+  height: 14px;
+  width: 100%;
+}
+
+/* Subtle Festive Rangoli Watermark */
+.rangoli-watermark {
+  background-image: radial-gradient(circle, rgba(255, 211, 106, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Mobile & Touch Target Utilities */
+@media (max-width: 640px) {
+  .btn-royal-gold {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+}
