@@ -4,7 +4,7 @@ const VISITOR_ID_KEY = 'diwali_visitor_uuid';
 const LOCAL_REF_CODE_KEY = 'diwali_user_referral_code';
 const LOCAL_USER_NAME_KEY = 'diwali_user_custom_name';
 const ACTIVE_REFERRER_SESSION_KEY = 'diwali_active_referrer_v1';
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const generateClientVisitorId = () => {
   const rand = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);

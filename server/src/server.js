@@ -26,12 +26,18 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   process.env.FRONTEND_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin (like mobile apps or curl) or matching origins
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+    // allow requests with no origin (like same-domain rewrites, mobile apps or curl) or matching origins
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      process.env.NODE_ENV !== 'production'
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Blocked by CORS policy'));
@@ -41,6 +47,18 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '10kb' }));
+
+// Ensure database connection is initialized for incoming requests
+app.use(async (req, res, next) => {
+  if (MONGO_URI && mongoose.connection.readyState === 0) {
+    try {
+      await connectDB();
+    } catch (e) {
+      // safe fallback to in-memory store
+    }
+  }
+  next();
+});
 
 // Global rate limiting
 app.use('/api/', apiLimiter);
