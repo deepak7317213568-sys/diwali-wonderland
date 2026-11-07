@@ -87,23 +87,35 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to MongoDB Atlas if URI is provided
+// Connect to MongoDB Atlas if URI is provided (with connection caching for serverless environments)
+let cachedPromise = null;
+
 export const connectDB = async () => {
   if (!MONGO_URI) {
     console.log('ℹ️  No MONGO_URI provided in environment. Running with in-memory store (demo mode).');
-    return;
+    return null;
   }
-  try {
-    await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-    });
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+  if (cachedPromise) {
+    return cachedPromise;
+  }
+  cachedPromise = mongoose.connect(MONGO_URI, {
+    serverSelectionTimeoutMS: 5000,
+  }).then((m) => {
     console.log('✨ Connected successfully to MongoDB Atlas database!');
-  } catch (error) {
+    return m;
+  }).catch((error) => {
+    cachedPromise = null;
     console.warn('⚠️ MongoDB Atlas connection error. Falling back gracefully to in-memory store:', error.message);
-  }
+    return null;
+  });
+  return cachedPromise;
 };
 
-if (process.env.NODE_ENV !== 'test') {
+// Run standalone server when not in test or Vercel serverless environment
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   connectDB().then(() => {
     app.listen(PORT, () => {
       console.log(`🪔 Diwali Wonderland server running on port ${PORT}`);
