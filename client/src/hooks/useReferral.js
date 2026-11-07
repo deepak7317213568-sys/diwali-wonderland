@@ -4,6 +4,8 @@ const VISITOR_ID_KEY = 'diwali_visitor_uuid';
 const LOCAL_REF_CODE_KEY = 'diwali_user_referral_code';
 const LOCAL_USER_NAME_KEY = 'diwali_user_custom_name';
 const ACTIVE_REFERRER_SESSION_KEY = 'diwali_active_referrer_v1';
+const LOCAL_PERSISTED_REF_CODE = 'diwali_persisted_referral_code';
+const LOCAL_ORIGINAL_REF_SOURCE = 'diwali_original_referral_source';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const generateClientVisitorId = () => {
@@ -62,11 +64,16 @@ export const useReferral = () => {
     }
     setVisitorId(vid);
 
-    // Read ?ref= from URL
+    // Read ?ref= from URL, or fallback to persisted referral code from localStorage
     try {
       const params = new URLSearchParams(window.location.search);
-      const ref = params.get('ref');
-      if (ref) {
+      const urlRef = params.get('ref');
+      // If no valid ref in URL, check localStorage (survives refreshes and multi-page visits)
+      const ref = (urlRef && urlRef.trim().length >= 3)
+        ? urlRef
+        : localStorage.getItem(LOCAL_PERSISTED_REF_CODE);
+
+      if (ref && ref.trim().length >= 3) {
         const cleanRef = ref.toUpperCase().trim();
 
         // Lookup referrer details from backend
@@ -82,7 +89,22 @@ export const useReferral = () => {
               setActiveReferrer(refInfo);
               sessionStorage.setItem(ACTIVE_REFERRER_SESSION_KEY, JSON.stringify(refInfo));
 
-              // Record visit
+              // Persist valid referral code without overwriting with empty/invalid values
+              localStorage.setItem(LOCAL_PERSISTED_REF_CODE, cleanRef);
+
+              // Record original referral source if not already saved
+              if (!localStorage.getItem(LOCAL_ORIGINAL_REF_SOURCE)) {
+                localStorage.setItem(
+                  LOCAL_ORIGINAL_REF_SOURCE,
+                  JSON.stringify({
+                    referralCode: cleanRef,
+                    referrerName: data.referrerName,
+                    firstSeenAt: new Date().toISOString(),
+                  })
+                );
+              }
+
+              // Record referral visit (deduplicated per browser session)
               const loggedKey = `diwali_visited_${cleanRef}`;
               if (!sessionStorage.getItem(loggedKey)) {
                 fetch(`${API_BASE}/referrals/visit`, {
@@ -92,7 +114,7 @@ export const useReferral = () => {
                 }).then(() => sessionStorage.setItem(loggedKey, 'true'));
               }
             } else {
-              // Invalid code: do not invent a sender name
+              // Invalid code: do not invent a sender name and do not overwrite valid stored code
               const fallbackInfo = { isValid: false, referrerName: null, referralCode: cleanRef };
               setActiveReferrer(fallbackInfo);
               sessionStorage.setItem(ACTIVE_REFERRER_SESSION_KEY, JSON.stringify(fallbackInfo));

@@ -5,6 +5,7 @@ import { GiftBox3D } from '../3d/GiftBox3D.jsx';
 import { triggerFestiveConfetti, triggerGoldenShower } from '../../utils/confetti.js';
 import { audioEngine } from '../../utils/audioSystem.js';
 import { getTranslation } from '../../utils/translations.js';
+import { trackEvent } from '../../utils/analyticsService.js';
 
 export const Task4Gift = ({
   onComplete,
@@ -25,6 +26,7 @@ export const Task4Gift = ({
   const handleOpenGift = () => {
     setIsOpen(true);
     triggerFestiveConfetti();
+    trackEvent('gift_opened', { stageId: 4, senderName });
     setTimeout(() => {
       setIsRevealed(true);
       triggerGoldenShower();

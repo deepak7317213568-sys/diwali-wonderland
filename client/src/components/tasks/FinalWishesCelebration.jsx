@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { triggerFestiveConfetti, triggerGoldenShower } from '../../utils/confetti.js';
 import { audioEngine } from '../../utils/audioSystem.js';
 import { getTranslation } from '../../utils/translations.js';
+import { trackEvent } from '../../utils/analyticsService.js';
 
 export const FinalWishesCelebration = ({
   language = 'en',
@@ -118,6 +119,7 @@ export const FinalWishesCelebration = ({
 
   const handleShareWishes = async () => {
     audioEngine.playTap();
+    trackEvent('invitation_shared', { channel: 'wishes_card_share', language });
     const shareText =
       language === 'hi'
         ? `✨ शुभ दीपावली ✨\n\nइस दिवाली आपके घर में खुशियों की ऐसी रोशनी हो, जो हर ग़म को दूर कर दे।\nआपकी मेहनत को सफलता मिले, आपके सपनों को नई उड़ान मिले और आपके अपनों का साथ हमेशा बना रहे।\n\n- सप्रेम व शुभाशीष सहित,\n${senderForSharing} 💛\n\n🪔 शाही 3D दीवाली अनुभव और अपना विशेष उपहार यहाँ खोलें:\n${effectiveShareUrl}`
@@ -147,6 +149,7 @@ export const FinalWishesCelebration = ({
 
   const handleWhatsAppShare = () => {
     audioEngine.playTap();
+    trackEvent('invitation_shared', { channel: 'wishes_card_whatsapp', language });
     if (getWhatsAppShareUrl) {
       window.open(getWhatsAppShareUrl(language), '_blank');
     } else {

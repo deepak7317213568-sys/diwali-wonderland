@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "node test/api.test.js"
+    "test": "node test/api.test.js && node test/analytics.test.js",
+    "test:api": "node test/api.test.js",
+    "test:analytics": "node test/analytics.test.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

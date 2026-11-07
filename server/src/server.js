@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import dns from 'node:dns';
 import { fileURLToPath } from 'node:url';
 import referralRoutes from './routes/referralRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 
 // Resolve DNS SRV queries via Google & Cloudflare Public DNS to bypass local ISP/router SRV blocks
@@ -65,6 +67,8 @@ app.use('/api/', apiLimiter);
 
 // API Routes
 app.use('/api/referrals', referralRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

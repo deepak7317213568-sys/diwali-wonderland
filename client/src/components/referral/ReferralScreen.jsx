@@ -15,6 +15,7 @@ import {
 import { triggerFestiveConfetti } from '../../utils/confetti.js';
 import { audioEngine } from '../../utils/audioSystem.js';
 import { getTranslation } from '../../utils/translations.js';
+import { trackEvent } from '../../utils/analyticsService.js';
 
 export const ReferralScreen = ({ referralState, language = 'en' }) => {
   const qrCanvasRef = useRef(null);
@@ -63,6 +64,7 @@ export const ReferralScreen = ({ referralState, language = 'en' }) => {
   }, [shareUrl]);
 
   const handleCopy = async () => {
+    trackEvent('invitation_shared', { channel: 'referral_copy_link' });
     const success = await copyShareLink();
     if (success) {
       audioEngine.playTap();
@@ -71,11 +73,13 @@ export const ReferralScreen = ({ referralState, language = 'en' }) => {
   };
 
   const handleWhatsApp = () => {
+    trackEvent('invitation_shared', { channel: 'referral_whatsapp' });
     audioEngine.playTap();
     window.open(getWhatsAppShareUrl(language), '_blank', 'noopener,noreferrer');
   };
 
   const handleNativeShare = async () => {
+    trackEvent('invitation_shared', { channel: 'referral_native_share' });
     audioEngine.playTap();
     await shareNative(language);
   };

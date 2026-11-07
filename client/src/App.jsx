@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CinematicIntro } from './components/intro/CinematicIntro.jsx';
 import { LanguageSelection } from './components/intro/LanguageSelection.jsx';
 import { Header } from './components/common/Header.jsx';
@@ -12,10 +12,12 @@ import { Stage5Anar } from './components/tasks/Stage5Anar.jsx';
 import { Stage6Chakri } from './components/tasks/Stage6Chakri.jsx';
 import { FinalWishesCelebration } from './components/tasks/FinalWishesCelebration.jsx';
 import { ReferralScreen } from './components/referral/ReferralScreen.jsx';
+import { AdminDashboard } from './components/admin/AdminDashboard.jsx';
 import { useAdventureProgress } from './hooks/useAdventureProgress.js';
 import { useAudio } from './hooks/useAudio.js';
 import { useReferral } from './hooks/useReferral.js';
 import { getTranslation } from './utils/translations.js';
+import { recordVisit, trackEvent } from './utils/analyticsService.js';
 
 export function App() {
   const progress = useAdventureProgress();
@@ -23,12 +25,37 @@ export function App() {
   const referral = useReferral();
 
   const [activeTaskView, setActiveTaskView] = useState(() => progress.currentStage || 1);
+  const [isAdminRoute, setIsAdminRoute] = useState(() => {
+    return window.location.pathname.startsWith('/admin');
+  });
 
   const t = (key) => getTranslation(progress.language, key);
+
+  // Popstate listener for back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      setIsAdminRoute(window.location.pathname.startsWith('/admin'));
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Track initial page visit
+  useEffect(() => {
+    recordVisit(referral.activeReferrer?.referralCode, referral.activeReferrer?.referrerName);
+  }, [referral.activeReferrer]);
 
   // Synchronize active view when a stage task completes
   const handleCompleteTask = (taskId, badgeData) => {
     progress.completeTask(taskId, badgeData);
+
+    // Track task_completed event
+    trackEvent('task_completed', { taskId, badgeName: badgeData?.name }, taskId);
+
+    // If mini-game (Quiz, Rangoli, Anar, Chakri), also track game_completed
+    if ([2, 3, 5, 6].includes(taskId)) {
+      trackEvent('game_completed', { stageId: taskId }, taskId);
+    }
 
     // When final tasks are completed, qualify referral if applicable
     if (taskId >= 4) {
@@ -41,6 +68,9 @@ export function App() {
 
   const handleSelectStage = (stageId) => {
     setActiveTaskView(stageId);
+    if ([1, 2, 3, 5, 6].includes(stageId)) {
+      trackEvent('game_started', { stageId }, stageId);
+    }
   };
 
   const handleProceedToReferrals = () => {
@@ -55,6 +85,18 @@ export function App() {
   const handleToggleLanguage = () => {
     progress.setLanguage(progress.language === 'hi' ? 'en' : 'hi');
   };
+
+  // 0. Protected Admin Analytics Dashboard View
+  if (isAdminRoute) {
+    return (
+      <AdminDashboard
+        onExit={() => {
+          window.history.pushState({}, '', '/');
+          setIsAdminRoute(false);
+        }}
+      />
+    );
+  }
 
   // 1. Initial Fullscreen Cinematic Intro Screen
   if (!progress.hasEntered) {
@@ -217,9 +259,24 @@ export function App() {
             <span>— {progress.language === 'hi' ? 'शाही 3D दीवाली अनुभव' : 'The Royal 3D Diwali Adventure'}</span>
           </div>
 
-          <div>
-            {t('creatorBy')}{' '}
-            <strong className="text-[#FFD36A] font-semibold">{t('creatorName')}</strong>
+          <div className="flex items-center gap-2">
+            <span>
+              {t('creatorBy')}{' '}
+              <strong className="text-[#FFD36A] font-semibold">{t('creatorName')}</strong>
+            </span>
+            <a
+              href="/admin/analytics"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/admin/analytics');
+                setIsAdminRoute(true);
+              }}
+              className="text-[#FFF0C2]/30 hover:text-[#FFD36A] transition-colors p-1"
+              title="Admin Analytics Portal"
+              aria-label="Admin Analytics"
+            >
+              🔒
+            </a>
           </div>
         </div>
       </footer>
